@@ -1,3 +1,4 @@
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QApplication, QVBoxLayout, QLabel, QComboBox,
                              QWidget, QGridLayout, QLineEdit, QDialog,
                              QPushButton, QMainWindow, QTableWidget, QTableWidgetItem)
@@ -21,7 +22,7 @@ class MainWindow(QMainWindow):
         help_menu_item.addAction(about_action)
 
         edit_menu_item = self.menuBar().addMenu("&Edit")
-        search_action = QAction("SearchDialog", self)
+        search_action = QAction("Search", self)
         search_action.triggered.connect(self.search)
         edit_menu_item.addAction(search_action)
 
@@ -106,9 +107,22 @@ class SearchDialog(QDialog):
         layout.addWidget(self.search_name)
 
         button = QPushButton("Search")
+        button.clicked.connect(self.search)
         layout.addWidget(button)
 
         self.setLayout(layout)
+
+    def search(self):
+        name = self.search_name.text()
+        connection = sqlite3.connect("database.db")
+        cursor = connection.cursor()
+        items = student_management_system.table.findItems(name,
+                                                          Qt.MatchFlag.MatchFixedString)
+        for item in items:
+            student_management_system.table.item(item.row(),
+                                                 1).setSelected(True)
+        cursor.close()
+        connection.close()
 
 
 app = QApplication(sys.argv)
